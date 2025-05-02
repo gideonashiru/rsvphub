@@ -3,11 +3,9 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import {
-  IconBrandGithub,
-  IconBrandGoogle,
-  IconBrandOnlyfans,
-} from "@tabler/icons-react";
+
+import { Highlight } from "./Highlight";
+import Link from "next/link";
 
 
 export default function SignupForm() {
@@ -22,7 +20,8 @@ export default function SignupForm() {
             Welcome to Event RSVP
           </h2>
           <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-            Login to eventrsvp  if you already have an account
+            
+          <Link href ="/login"> <Highlight> Login here </Highlight> </Link> into eventrsvp if you already have an account
           </p>
     
           <form className="my-8" onSubmit={handleSubmit}>
@@ -45,14 +44,6 @@ export default function SignupForm() {
               <Input id="password" placeholder="••••••••" type="password" />
             </LabelInputContainer>
     
-            {/* <LabelInputContainer className="mb-8">
-              <Label htmlFor="twitterpassword">Your twitter password</Label>
-              <Input
-                id="twitterpassword"
-                placeholder="••••••••"
-                type="twitterpassword"
-              />
-            </LabelInputContainer> */}
     
             <button
               className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"

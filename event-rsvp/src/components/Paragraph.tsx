@@ -1,6 +1,4 @@
 import React from "react";
-
-import localFont from "next/font/local";
 import { twMerge } from "tailwind-merge";
 
 export const Paragraph = ({
@@ -11,12 +9,7 @@ export const Paragraph = ({
   children: React.ReactNode;
 }) => {
   return (
-    <p
-      className={twMerge(
-        "text-sm lg:text-base font-normal text-secondary",
-        className
-      )}
-    >
+    <p className={twMerge("text-sm lg:text-base font-normal text-secondary", className )} >
       {children}
     </p>
   );

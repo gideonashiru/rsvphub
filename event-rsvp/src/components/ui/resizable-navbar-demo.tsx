@@ -13,10 +13,9 @@ import {
 import { useState } from "react";
 import Link from "next/link";
 import { navItems } from "@/constants/navItems";
-
+import { toast } from "sonner";
 
 export function NavbarDemo() {
-  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -27,10 +26,17 @@ export function NavbarDemo() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
- 
-            <NavbarButton href="/login" variant="dark">Login</NavbarButton>          
-            <NavbarButton href="/signup" variant="primary">Sign up</NavbarButton>     
 
+            <NavbarButton
+              href="/login"
+              variant="dark"
+            >
+              Login
+            </NavbarButton>
+
+            <NavbarButton href="/signup" variant="primary">
+              Sign up
+            </NavbarButton>
           </div>
         </NavBody>
 
@@ -60,7 +66,7 @@ export function NavbarDemo() {
             ))}
             <div className="flex w-full flex-col gap-4">
               <NavbarButton
-                href="/login" 
+                href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
                 className="w-full"
@@ -68,7 +74,7 @@ export function NavbarDemo() {
                 Login
               </NavbarButton>
               <NavbarButton
-                href="/signup" 
+                href="/signup"
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
                 className="w-full"
@@ -182,6 +188,3 @@ const DummyContent = () => {
     </div>
   );
 };
-
-
-

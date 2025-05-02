@@ -1,5 +1,4 @@
-
-const NavbarDemoPage = () => {
+const AboutPage = () => {
   return (
     <div>
       <h1 className="text-center text-3xl font-bold my-8">
@@ -10,4 +9,4 @@ const NavbarDemoPage = () => {
   );
 };
 
-export default NavbarDemoPage;
+export default AboutPage;
