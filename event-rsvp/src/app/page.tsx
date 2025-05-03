@@ -7,12 +7,16 @@ export default function Home() {
   return (
     <div>
       {" "}
-      <h1>Hello</h1>
+
       <Button className= ""
       variant="outline"
       onClick={() =>
         toast("You made it", {
-          description: "Sunday, December 03, 2023 at 9:00 AM",
+          description: (
+            <span className="text-black">
+              mane im dead!
+            </span>
+          ),
           action: {
             label: "Undo",
             onClick: () => console.log("Undo"),

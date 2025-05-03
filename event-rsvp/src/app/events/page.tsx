@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ButtonT } from "@/components/ui/buttontwo";
+import { Events } from "@/components/Events"
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Evens | event rSvP",
+  description:
+    "rSvP description.",
+};
 
 export default function EventsPage() {
   return (
@@ -12,11 +19,7 @@ export default function EventsPage() {
           Add Event
         </ButtonT>
       </div>
-
-      {/* //List of events */}
-      <div className="inline-flex flex-col ml-15 w-190">
-       
-          </div>
+      <Events/>
     </>
   );
 }

@@ -10,7 +10,7 @@ import { inter } from './fonts';
 
 export const metadata: Metadata = {
   title: "Event RSVP | Gideon",
-  description: "Create events, send out rsvp's here",
+  description: "Create events, send out rsvp's.",
 };
 
 export default function RootLayout({  children, }: Readonly<{  children: React.ReactNode;}>) {

@@ -1,8 +1,8 @@
 import { StaticImageData } from "next/image";
 
-export type Event = {
+export type EventType = {
     title: string;
-    card: StaticImageData[] | string[];
+    card: StaticImageData;
     date: string;
     time: string;
     location: string;
