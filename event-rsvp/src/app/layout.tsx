@@ -1,12 +1,12 @@
 /* eslint-disable react/no-children-prop */
-import type { Metadata } from "next";
-
-import { twMerge } from "tailwind-merge";
 import "./globals.css";
+import type { Metadata } from "next";
+import { twMerge } from "tailwind-merge";
 import { NavbarDemo } from "@/components/ui/resizable-navbar-demo";
 import { Toaster } from "@/components/ui/sonner";
 import { play } from './fonts';
 import { inter } from './fonts';
+import { montserrat } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Event RSVP | Gideon",
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({  children, }: Readonly<{  children: React.ReactNode;}>) {
   return ( 
-    <html lang="en" className={`${inter.className} ${play.variable}`}>
-      <body className ={twMerge(  inter.className,  "flex antialiased min-h-screen bg-gray-900"  )} >
+    <html lang="en" className={`${inter.className} ${play.variable} ${montserrat.className} `}>
+      <body className ={twMerge(  montserrat.className,  "flex antialiased min-h-screen bg-gray-900"  )} >
       <Toaster />
       <div className="lg:pl-2 lg:pt-2 lg:pr-2 bg-gray-100 flex-1 overflow-y-auto">
           <div className="flex-1 bg-yellow-100 min-h-screen lg:rounded-tl-xl lg:rounded-tr-xl border border-transparent lg:border-neutral-200 overflow-y-auto">
