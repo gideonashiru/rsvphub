@@ -1,10 +1,11 @@
 const AboutPage = () => {
   return (
     <div>
-      <h1 className="text-center text-3xl font-bold my-8">
-        About Page
-      </h1>
- 
+      <div className="container flex flex-col sm:flex-row justify-between items-start sm:items-center font-play mt-40 ">
+        <h4 className="flex flex-col inline text-3xl font-montserrat ml-16">
+          ABOUT ME- The Developer
+        </h4>
+      </div>
     </div>
   );
 };

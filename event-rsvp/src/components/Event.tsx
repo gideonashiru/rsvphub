@@ -53,7 +53,7 @@ export const SingleEvent = ({ event }: { event: EventType }) => {
           </h4>
         </div>
 
-        <div className="flex space-x-2 md:mb-1 mt-2 md:mt-0">
+        {/* <div className="flex space-x-2 md:mb-1 mt-2 md:mt-0">
           {event.attendees?.map((stack: string) => (
             <span
               key={stack}
@@ -62,7 +62,8 @@ export const SingleEvent = ({ event }: { event: EventType }) => {
               {stack}
             </span>
           ))}
-        </div>
+        </div> */}
+
       </div>
 
       <a

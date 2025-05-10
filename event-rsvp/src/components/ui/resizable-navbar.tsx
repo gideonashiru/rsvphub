@@ -11,6 +11,8 @@ import {
 } from "motion/react";
 
 import React, { useRef, useState } from "react";
+import appLogo from '@/assets/images/favicon_io/android-chrome-512x512.png';
+//src\assets\images\favicon_io\android-chrome-512x512.png
 
 
 interface NavbarProps {
@@ -240,7 +242,8 @@ export const NavbarLogo = () => {
     >
 
       <img
-        src="https://assets.aceternity.com/logo-dark.png" //change put another logo for the events app
+       // src="https://assets.aceternity.com/logo-dark.png" //change put another logo for the events app
+        src = {appLogo.src}
         alt="logo"
         width={30}
         height={30}

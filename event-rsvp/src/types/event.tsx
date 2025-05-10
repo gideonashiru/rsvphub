@@ -5,6 +5,7 @@ export type EventType = {
     card: StaticImageData;
     date: string;
     time: string;
+    description?: string;
     location: string;
     capacity: number;
     href: string;
