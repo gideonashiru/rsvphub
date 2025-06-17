@@ -1,174 +1,203 @@
-/* eslint-disable @next/next/no-img-element */
-//Component that holds the UI to dispay all the events current user has
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+//Component that holds the UI to display all the events current user has
 "use client";
-import React, { useState } from "react";
-import { events } from "@/constants/events";
-import { EventType } from "@/types/event";
-import Link from "next/link";
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import { EventType } from "@/types/types_all";
 import { motion } from "framer-motion";
-import { Paragraph } from "./Paragraph";
-import temp from "@/assets/images/placeholder.png";
-import { Button } from "./ui/button";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationPrevious,
   PaginationLink,
-  PaginationEllipsis,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { ThreeDCard } from "./event-3d-card";
+import { Button } from "./ui/button";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
-export const Events = () => {
+type TabKey = "my-events" | "invited-events" | "past-events";
+
+interface EventsProps {
+  title: TabKey;
+  events: any;
+  onTabChange: (tab: TabKey) => void; // Add this prop to handle tab changes
+}
+
+export const Events = ({ title, events, onTabChange }: EventsProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 6;
-
+  const eventsPerPage = 8; // Number of events to display per page
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
   const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
   const totalPages = Math.ceil(events.length / eventsPerPage);
+ 
 
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const tabLabels = {
+    "my-events": "My Events",
+    "invited-events": "Invited Events",
+    "past-events": "Past Events",
+  };
+
+  const TabButton = ({
+    tabKey,
+    label,
+    isActive,
+    onClick,
+  }: {
+    tabKey: TabKey;
+    label: string;
+    isActive: boolean;
+    onClick: (tab: TabKey) => void;
+  }) => (
+    <button
+      onClick={() => onClick(tabKey)}
+      className={`
+        px-6 py-3 font-montserrat font-semibold text-lg transition-all duration-200 ease-in-out
+        border-b-4 hover:bg-gray-50 relative
+        ${
+          isActive
+            ? "border-blue-600 text-blue-600 bg-blue-50/50"
+            : "border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300"
+        }
+      `}
+    >
+      {label}
+      {isActive && (
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600"
+          layoutId="activeTab"
+          initial={false}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        />
+      )}
+    </button>
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [title]);
 
   return (
     <div>
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentEvents.map((event, idx) => (
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-4">
+        <div className="flex items-center justify-between">
+          <nav className="flex space-x-0 -mb-px">
+            {Object.entries(tabLabels).map(([key, label]) => (
+              <TabButton
+                key={key}
+                tabKey={key as TabKey}
+                label={label}
+                isActive={title === key}
+                onClick={onTabChange}
+              />
+            ))}
+          </nav>
 
-             <motion.div
-              key={event.href}
-              initial={{
-                opacity: 0,
-                x: -50,
-              }}
-              animate={{
-                opacity: 1,
-                x: 0,
-              }}
-              transition={{ duration: 0.2, delay: idx * 0.1 }}
+          {/* Create Event Button */}
+          <Button className="flex items-center gap-2 bg-black hover:bg-blue-800 text-white">
+            <Link
+              href="/events/create-event"
+              className="flex items-center gap-2"
             >
-              
+              <Plus className="w-4 h-4" />
+              Create Event
+            </Link>
+          </Button>
+        </div>
+      </div>
 
-              <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow border w-full">
-                <div className="relative h-100">
-                  <img
-                    alt="test cover"
-                    src={temp.src}
-                    className="w-full h-full object-fill"
-                  />
-                  <div className="absolute top-4 left-4 bg-primary text-primary-foreground rounded-md px-3 py-1 font-medium">
-                    {event.date}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h2 className="font-heading text-xl font-semibold mb-2">
-                    {event.title}
-                  </h2>
-                  <div className="flex items-center text-muted-foreground mb-2">
-                    <svg
-                      fill="none"
-                      width="16"
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="16"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="mr-2"
-                    >
-                      <path d="M12 20s-8-4.5-8-8.5a8.5 8.5 0 0 1 17 0c0 4-8 8.5-8 8.5z" />
-                      <circle r="2" cx="12" cy="10" />
-                    </svg>
-                    <span>{event.location}</span>
-                  </div>
-                  <div className="flex items-center text-muted-foreground mb-4">
-                    <svg
-                      fill="none"
-                      width="16"
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="16"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="mr-2"
-                    >
-                      <circle r="10" cx="12" cy="12" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    <span>{event.time}</span>
-                  </div>
-                  <p className="text-muted-foreground mb-6">
-                    {event.description}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex -space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
-                        +{event.capacity}{" "}
-                        {/*change to number of current capacities */}
-                      </div>
-                      <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden">
-                        <img
-                          alt="Attendee"
-                          src={temp.src}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden">
-                        <img
-                          alt="Attendee"
-                          src={temp.src}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      {/* Content Section */}
+      <div className="py-2">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm text-gray-500">
+            {events.length} {events.length === 1 ? "event" : "events"}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center">
+          {currentEvents.map((event: EventType, idx: number) => (
+            <motion.div
+              key={event.href}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: idx * 0.1 }}
+            >
+              <ThreeDCard event={event} />
             </motion.div>
           ))}
         </div>
       </div>
-      <div className="mt-12">
-  <Pagination>
-    <PaginationContent>
-      <PaginationItem>
-        <PaginationPrevious
-          href="#"
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-        />
-      </PaginationItem>
 
-      {Array.from({ length: totalPages }, (_, i) => (
-        <PaginationItem key={i}>
-          <PaginationLink
-            href="#"
-            isActive={currentPage === i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-          >
-            {i + 1}
-          </PaginationLink>
-        </PaginationItem>
-      ))}
+      {currentEvents.length === 0 && (
+        <motion.div
+          className="text-center text-muted-foreground mt-12 py-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="text-6xl mb-4">📅</div>
+          <h3 className="text-xl font-semibold mb-2">No events found</h3>
+          <p className="text-gray-500">
+            {title === "my-events" && "You haven't created any events yet."}
+            {title === "invited-events" &&
+              "You don't have any event invitations."}
+            {title === "past-events" && "No past events to display."}
+          </p>
+        </motion.div>
+      )}
 
-      <PaginationItem>
-        <PaginationNext
-          href="#"
-          onClick={() =>
-            setCurrentPage((p) => Math.min(p + 1, totalPages))
-          }
-        />
-      </PaginationItem>
-    </PaginationContent>
-  </Pagination>
-</div>
-
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-12">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((p) => Math.max(p - 1, 1));
+                  }}
+                  className={
+                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                  }
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    href="#"
+                    isActive={currentPage === i + 1}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(i + 1);
+                    }}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((p) => Math.min(p + 1, totalPages));
+                  }}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 };
-
