@@ -25,11 +25,11 @@ export function NavbarDemo() {
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
 
-            <NavbarButton href="/auth/login" variant="dark">
+            <NavbarButton href="/auth/login" className="bg-primary text-primary-foreground focus-visible:ring-ring hover:bg-accent">
               Login
             </NavbarButton>
 
-            <NavbarButton href="/auth/sign-up" variant="primary">
+            <NavbarButton href="/auth/sign-up" className="bg-primary text-primary-foreground border-input focus-visible:ring-ring hover:bg-accent">
               Sign up
             </NavbarButton>
           </div>

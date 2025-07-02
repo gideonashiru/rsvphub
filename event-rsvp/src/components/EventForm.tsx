@@ -24,6 +24,8 @@ import { uploadImage, createEvent } from "@/lib/actions/client-events";
 import { DateTimePicker } from "./date-time-picker";
 import { ImageUpload } from "./image-upload";
 import { User } from "@supabase/supabase-js";
+import { useRouter } from 'next/navigation'; // Next.js App Pages
+
 
 const formSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters." }),
@@ -40,7 +42,7 @@ const formSchema = z.object({
   card: z
     .instanceof(File)
     .refine((file) => file.size > 0, { message: "Card file is required." }),
-  userId: z.string().optional(), // Optional userId field
+  userId: z.string(), // Optional userId field
 });
 
 export function EventForm(user: { user: User }) {
@@ -48,7 +50,7 @@ export function EventForm(user: { user: User }) {
   const [pickerMode, setPickerMode] = useState<"start" | "end">("start");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
-
+  const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,31 +64,28 @@ export function EventForm(user: { user: User }) {
     },
   });
 
+  useEffect(() => {
+    if (user?.user?.id) {
+      form.setValue("userId", user.user.id);
+    }
+  }, [user?.user?.id, form]);
+
   // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const imageUrl = values.card ? await uploadImage(values.card) : null;
-
-    form.setValue("userId", user.user.id); // Set the user ID from the passed user object
 
     console.log("Form submitted with values:", values);
     const { error } = await createEvent(values, imageUrl);
 
     if (error) {
-      console.error("Error creating event:", error.message);
+      // console.error("Error creating event:", error.message);
       toast.error("Failed to create event. Please try again.");
       return;
     }
 
     toast.success("Event created successfully!");
-    form.reset({
-      title: "(example)",
-      description: "",
-      location: "",
-      date: undefined,
-      capacity: 1,
-      card: undefined,
-    }); // Reset the form after successful submission
-    setImagePreview(null); // Clear the image preview
+    router.push('/events')
+
   };
 
   // Helper function to check if a date is valid for start time (at least 2 hours before day ends)
@@ -185,12 +184,10 @@ export function EventForm(user: { user: User }) {
         return;
       }
       setStartTime(newDate);
-      // form.setValue("start_time", newDate.toLocaleString());
 
       // Clear end time if it's now invalid
       if (endTime && endTime <= newDate) {
         setEndTime(null);
-        // form.setValue("end_time", "");
       }
     } else {
       if (!isValidEndTime(newDate)) {
@@ -198,7 +195,6 @@ export function EventForm(user: { user: User }) {
         return;
       }
       setEndTime(newDate);
-      // form.setValue("end_time", newDate.toLocaleString());
     }
 
     // Update the date field with formatted string
@@ -287,7 +283,7 @@ export function EventForm(user: { user: User }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="title"
@@ -311,10 +307,10 @@ export function EventForm(user: { user: User }) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Event description</FormLabel>
+              <FormLabel>Write a message to the people you&apos;re inviting (optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter a description of the event(optional)"
+                  placeholder="Write here..."
                   {...field}
                   className="input"
                 />
@@ -400,7 +396,7 @@ export function EventForm(user: { user: User }) {
           )}
         />
 
-        <Button type="submit" className="w-full cursor-pointer">
+        <Button type="submit" className="w-full cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-2">
           Build Your Event
         </Button>
       </form>

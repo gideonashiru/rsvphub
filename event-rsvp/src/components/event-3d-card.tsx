@@ -14,7 +14,7 @@ export function ThreeDCard({ event }: { event: EventType }) {
         href={event.slug ? `/events/${event.slug}` : event.href}
         className="block"
       >
-        <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[26rem] h-auto rounded-xl p-6 border">
+        <CardBody className="bg-card relative group/card w-auto sm:w-[26rem] h-auto rounded-xl p-6 border">
           <CardItem
             translateZ="50"
             className="text-xl font-bold text-neutral-600 dark:text-white"
@@ -50,21 +50,21 @@ export function ThreeDCard({ event }: { event: EventType }) {
               translateZ={20}
               className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
             >
-              Click card to open event →
+              Click card to see event details →
             </CardItem>
             <CardItem
               translateZ={20}
-              className="px-4 py-2 rounded-xl flex items-center bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+              className="px-2 py-2 rounded-xl flex items-center bg-black dark:bg-white dark:text-black text-xs font-bold"
             >
-              <MapPin size="30"  className="w-4 h-4 text-muted-foreground text-xl " />
+              <MapPin size="30"  className="w-4 h-4 text-accent-foreground text-xl" />
               {event.location}
             </CardItem>
             <CardItem
               translateZ={20}
-              className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+              className="px-4 py-1 rounded-xl bg-black dark:bg-white dark:text-black text-xs font-bold"
             >
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
-                +{event.capacity}
+              <div className="w-13 h-13 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
+                +{event.capacity} ppl
               </div>
             </CardItem>
           </div>

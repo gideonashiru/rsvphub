@@ -19,11 +19,18 @@ export type UserType = {
   image?: string;
 };
 
-export type NotificationType = {
+export interface EventNotification {
   id: string;
   title: string;
-  content: string;
-  date: string;
-  read: boolean;
-  userId: string;
-};
+  description?: string;
+  eventDate: string;
+  location?: string;
+  organizer: string;
+  status: 'pending' | 'accepted' | 'declined';
+}
+
+export interface Attendee {
+  id: number;
+  name: string;
+  avatarText: string;
+}

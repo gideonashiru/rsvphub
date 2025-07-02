@@ -6,7 +6,7 @@ export default async function CreateEvent() {
   const user = await getCurrentUser();
     if (!user) {
     return (
-      <main className="max-w-2xl mx-auto mt-40 mb-8 border rounded-2xl p-6 shadow-lg bg-white">
+      <main className="max-w-2xl mx-auto mt-40 mb-8 border rounded-2xl p-6 shadow-lg bg-card text-card-foreground">
         <article className="prose">
           <h1 className="text-2xl font-bold mb-4">Event Builder</h1>
           <p className="text-lg mb-4 text-red-600">
@@ -18,7 +18,7 @@ export default async function CreateEvent() {
   }
 
   return (
-    <main className="max-w-2xl mx-auto mt-40 mb-8 border rounded-2xl p-6 shadow-lg bg-white">
+    <main className="max-w-2xl mx-auto mt-40 mb-8 border rounded-2xl p-6 shadow-lg bg-card text-card-foreground">
       <article className="prose">
         <h1 className="text-2xl font-bold mb-4">Event Builder</h1>
         <h3 className="text-lg mb-4">

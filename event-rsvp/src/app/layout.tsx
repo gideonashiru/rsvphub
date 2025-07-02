@@ -1,4 +1,3 @@
-
 import "antd/dist/reset.css";
 import "./globals.css";
 
@@ -9,9 +8,11 @@ import { Toaster } from "@/components/ui/sonner";
 import { play } from "./fonts";
 import { inter } from "./fonts";
 import { montserrat } from "./fonts";
+import { ThemeProvider } from "next-themes";
+import { Footer } from "@/components/ui/Footer";
 
 export const metadata: Metadata = {
-  title: "Event RSVP | Gideon",
+  title: "Event RSVP | by Gideon",
   description: "Create events, send out rsvp's.",
 };
 
@@ -22,20 +23,26 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.className} ${play.variable} ${montserrat.className} `}
+      suppressHydrationWarning
     >
       <body
         className={twMerge(
           montserrat.className,
-          "flex antialiased min-h-screen"
+          "flex flex-col min-h-screen antialiased"
         )}
       >
-        <Toaster />
-        <div className="lg:pl-2 lg:pt-2 lg:pr-2 bg-blue-300 flex-1 overflow-y-auto">
-          <NavbarDemo />
-          {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Toaster richColors />
 
-          {/* </div> */}
-        </div>
+          {/* Wrapper for content and navbar */}
+          <div className="flex-grow flex flex-col lg:pl-2 lg:pt-2 lg:pr-2 overflow-y-auto">
+            <NavbarDemo />
+            {children}
+          </div>
+
+        
+          {/* <Footer /> */}
+        </ThemeProvider>
       </body>
     </html>
   );

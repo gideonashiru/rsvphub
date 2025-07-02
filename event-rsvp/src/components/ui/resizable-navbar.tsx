@@ -242,7 +242,6 @@ export const NavbarLogo = () => {
     >
 
       <img
-       // src="https://assets.aceternity.com/logo-dark.png" //change put another logo for the events app
         src = {appLogo.src}
         alt="logo"
         width={30}

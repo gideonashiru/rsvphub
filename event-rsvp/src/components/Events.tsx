@@ -58,7 +58,7 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
         border-b-4 hover:bg-gray-50 relative
         ${
           isActive
-            ? "border-blue-600 text-blue-600 bg-blue-50/50"
+            ? "border-blue-600 text-blue-600 bg-accent"
             : "border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300"
         }
       `}
@@ -66,7 +66,7 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
       {label}
       {isActive && (
         <motion.div
-          className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600"
+          className="absolute bottom-0 left-0 right-0 h-1 bg-accent"
           layoutId="activeTab"
           initial={false}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -97,7 +97,7 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
           </nav>
 
           {/* Create Event Button */}
-          <Button className="flex items-center gap-2 bg-black hover:bg-blue-800 text-white">
+          <Button className="flex items-center gap-2 hover:bg-accent cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-2">
             <Link
               href="/events/create-event"
               className="flex items-center gap-2"
@@ -112,7 +112,7 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
       {/* Content Section */}
       <div className="py-2">
         <div className="flex items-center justify-between mb-2">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm">
             {events.length} {events.length === 1 ? "event" : "events"}
           </div>
         </div>
@@ -143,7 +143,7 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
           <p className="text-gray-500">
             {title === "my-events" && "You haven't created any events yet."}
             {title === "invited-events" &&
-              "You don't have any event invitations."}
+              "You have not accepted any event invitations."}
             {title === "past-events" && "No past events to display."}
           </p>
         </motion.div>

@@ -63,7 +63,7 @@ export function DateTimePicker({
           variant={pickerMode === "start" ? "default" : "outline"}
           size="sm"
           onClick={() => setPickerMode("start")}
-          className="flex-1"
+          className="flex-1 cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-2"
         >
           Start Time
           {startTime && (
@@ -77,7 +77,7 @@ export function DateTimePicker({
           variant={pickerMode === "end" ? "default" : "outline"}
           size="sm"
           onClick={() => setPickerMode("end")}
-          className="flex-1"
+          className="flex-1 cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-2"
           disabled={!startTime}
         >
           End Time
@@ -113,7 +113,7 @@ export function DateTimePicker({
               mode="single"
               selected={currentTime || undefined}
               onSelect={handleDateSelect}
-              initialFocus
+              // initialFocus
               disabled={(date) => {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);

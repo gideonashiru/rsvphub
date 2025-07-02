@@ -3,10 +3,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Events } from "@/components/Events";
-import { Footer } from "@/components/ui/Footer";
 import { EventType } from "@/types/types_all";
-import { getCurrentUserEvents } from "@/lib/actions/client-events";
-import { get } from "http";
+import { getCurrentUserEvents, getUserInvtdEvents } from "@/lib/actions/client-events";
 
 type TabKey = "my-events" | "invited-events" | "past-events";
 
@@ -25,6 +23,8 @@ export default function EventsPage({ user }: { user: any }) {
     const fetchEvents = async () => {
       const events = await getCurrentUserEvents(user.id)
       setMyEvents(events)
+      const invites = await getUserInvtdEvents(user.id)
+      setInvitedEvents(invites)
     }
 
     fetchEvents()
@@ -51,7 +51,6 @@ export default function EventsPage({ user }: { user: any }) {
         events={getEventsForTab(activeTab)}
         onTabChange={setActiveTab}
       />
-      <Footer />
     </div>
   );
 }

@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 
 
+import { Footer } from "@/components/ui/Footer";
 import { ModeToggle } from "@/components/ui/toggle-mode";
 import { toast } from "sonner";
 
@@ -18,8 +18,9 @@ export default function Home() {
   return (
     <div>
       <ModeToggle />
+      
 
-         {/* <Footer/> */}
+        <Footer/>
     </div>
   );
 }
