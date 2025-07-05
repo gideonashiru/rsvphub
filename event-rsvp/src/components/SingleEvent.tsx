@@ -10,6 +10,8 @@ import { motion } from "framer-motion";
 import { ThreeDCardForSlugs } from "./event-3d-page";
 import { useRouter } from "next/navigation";
 import Attendees from "./Attendees";
+import { toast } from "sonner";
+
 
 export const SingleEventPage = ({
   event,
@@ -21,12 +23,25 @@ export const SingleEventPage = ({
   isOwner: boolean;
 }) => {
   const router = useRouter();
+ 
 
-  const inviteLink = `${window.location.origin}/event/${event.slug}/invite`;
+  const inviteLink = `${window.location.origin}/invite/${event.slug}`;
 
   function rsvpHere() {
     router.push(`/events/${event.slug}/rsvp`);
   }
+
+  const copyInviteLink = async () => {
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      toast.success("RSVP link copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+      toast.error("Failed to copy RSVP link.");
+    }
+  };
+
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -113,7 +128,8 @@ export const SingleEventPage = ({
                   size="lg"
                   variant="default"
                   className="cursor-pointer w-full py-4 px-6 rounded-xl bg-primary hover:bg-primary/90 hover:ring-2 hover:ring-ring hover:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5"
-                  onClick={rsvpHere}
+                  // onClick={rsvpHere}
+                  onClick={copyInviteLink}
                 >
                   <Link className="w-5 h-5" />
                   Get RSVP Link
@@ -130,5 +146,3 @@ export const SingleEventPage = ({
   );
 };
 
-// This component is used to display the event details and the list of attendees.
-// It takes in an 'event' object and an array of 'attendees' as props.

@@ -12,16 +12,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { redirect, useParams } from "next/navigation";
-import { EventType } from "@/types/types_all";
+import { Attendee, EventType } from "@/types/types_all";
 import { useEffect, useState } from "react";
 import { getEventBySlug, deleteEventBySlug } from "@/lib/actions/client-events";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import {
+  getAttendeesId,
+  getUserFromAttndId,
+} from "@/lib/actions/client-events";
 
 export default function EventSlugContent({ user }: { user: any }) {
   const params = useParams();
   const [eventP, setEvent] = useState<EventType | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [eventAttendees, setAttendees] = useState<Attendee[]>([]);
 
   useEffect(() => {
     if (!user?.id || !params.slug) return;
@@ -35,7 +40,29 @@ export default function EventSlugContent({ user }: { user: any }) {
       setIsOwner(isOwnerMatch);
     };
 
+    const fetchAttendeesIds = async () => {
+      if (params.slug) {
+        const attendeesIds = await getAttendeesId(params.slug as string);
+
+        if (attendeesIds.length > 0) {
+          const attendeesData = await Promise.all(
+            attendeesIds.map(async (attendeeId) => {
+              const user = await getUserFromAttndId(attendeeId);
+              return user;
+            })
+          );
+
+          setAttendees(
+            attendeesData.filter((a): a is Attendee => !!a && !Array.isArray(a))
+          );
+        } else {
+          setAttendees([]); // Optional: clear list if no attendees found
+        }
+      }
+    };
+
     fetchEvents();
+    fetchAttendeesIds();
   }, [user?.id, params.slug]);
 
   if (eventP === null) {
@@ -65,78 +92,73 @@ export default function EventSlugContent({ user }: { user: any }) {
     redirect("/events");
   }
 
-return (
-  <div className="flex flex-row justify-center w-full">
-    <div className="max-w-[1440px] relative">
-      <div className="container mx-auto px-20 pt-[164px] mb-4 space-y-6">
-        
-        {/* 👇 Entire owner-only panel is hidden if not the owner */}
-        {isOwner && (
-          <motion.div
-            key={eventP.href}
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2, delay: 0.1 }}
-            className="bg-card/90 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-sm"
-          >
-            <div className="flex flex-col space-y-6 sm:flex-row sm:space-y-0 sm:space-x-2">
-              <Link href={`/events/${eventP.slug}/edit`}>
-                <Button
-                  size="sm"
-                  variant="link"
-                  className="flex items-center cursor-pointer"
-                >
-                  <SquarePen />
-                  Edit Event
-                </Button>
-              </Link>
-
-              <Dialog>
-                <DialogTrigger asChild>
+  return (
+    <div className="flex flex-row justify-center w-full">
+      <div className="max-w-[1440px] relative">
+        <div className="container mx-auto px-20 pt-[164px] mb-4 space-y-6">
+          {/* 👇 Entire owner-only panel is hidden if not the owner */}
+          {isOwner && (
+            <motion.div
+              key={eventP.href}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+              className="bg-card/90 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-sm"
+            >
+              <div className="flex flex-col space-y-6 sm:flex-row sm:space-y-0 sm:space-x-2">
+                <Link href={`/events/${eventP.slug}/edit`}>
                   <Button
                     size="sm"
                     variant="link"
                     className="flex items-center cursor-pointer"
                   >
-                    <Trash2 />
-                    Delete Event
+                    <SquarePen />
+                    Edit Event
                   </Button>
-                </DialogTrigger>
+                </Link>
 
-                <DialogContent>
-                  <DialogTitle className="text-lg font-semibold">
-                    Delete {eventP.title}
-                  </DialogTitle>
-                  Are you sure you want to delete this event? This action
-                  cannot be undone.
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="flex items-center cursor-pointer"
-                    onClick={deleteEvent}
-                  >
-                    <Trash2 />
-                    Yes, Delete
-                  </Button>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </motion.div>
-        )}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="link"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <Trash2 />
+                      Delete Event
+                    </Button>
+                  </DialogTrigger>
 
-        <div className="relative">
-          <SingleEventPage event={eventP} attendees={attendees} isOwner={isOwner}/>
+                  <DialogContent>
+                    <DialogTitle className="text-lg font-semibold">
+                      Delete {eventP.title}
+                    </DialogTitle>
+                    Are you sure you want to delete this event? This action
+                    cannot be undone.
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="flex items-center cursor-pointer"
+                      onClick={deleteEvent}
+                    >
+                      <Trash2 />
+                      Yes, Delete
+                    </Button>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </motion.div>
+          )}
+
+          <div className="relative">
+            <SingleEventPage
+              event={eventP}
+              attendees={eventAttendees}
+              isOwner={isOwner}
+            />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
-
-
+  );
 }
-
-const attendees = [
-  { id: 1, name: "John Doe", avatarText: "JD" },
-  { id: 2, name: "Jane Smith", avatarText: "JS" },
-  // ... more attendees
-];

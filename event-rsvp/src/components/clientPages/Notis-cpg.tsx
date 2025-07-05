@@ -31,50 +31,75 @@ export default function NotisPage({ user }: any) {
   const [notifications, setNotifications] = useState<EventNotification[]>([]);
   const [username, setUsername] = useState<string | null>("Unknown User");
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const notifications = await getUserInvites(user?.id);
-        const userName = await getUserNamefromId(user?.id);
-        setUsername(userName);
-        setNotifications(notifications);
-        // console.log("Fetched notifications:", notifications);
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error);
-      }
-    };
 
-    fetchNotifications();
-  }, [user?.id]);
+  useEffect(() => {
+  const fetchNotifications = async () => {
+    try {
+      const fresh = await getUserInvites(user?.id);
+      const userName = await getUserNamefromId(user?.id);
+      setUsername(userName);
+
+      // Load existing session-stored notifications
+      const cachedRaw = sessionStorage.getItem("cached-notifications");
+      const cached: EventNotification[] = cachedRaw ? JSON.parse(cachedRaw) : [];
+
+      // Merge fresh ones only if they're new (based on ID)
+      const combined = [...cached];
+      for (const notif of fresh) {
+        if (!combined.find((n) => n.id === notif.id)) {
+          combined.push(notif);
+        }
+      }
+
+      setNotifications(combined);
+      sessionStorage.setItem("cached-notifications", JSON.stringify(combined));
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    }
+  };
+
+  fetchNotifications();
+}, [user?.id]);
+
 
   const handleAccept = async (notificationId: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === notificationId
-          ? { ...notification, status: "accepted" as const }
-          : notification
-      )
-    );
-    const notification = notifications.find(n => n.id === notificationId);
-    if (notification) {
-      await acceptInvite(user?.id, notification);
-    }
-  };
-
-  const handleDecline = async (notificationId: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === notificationId
-          ? { ...notification, status: "declined" as const }
-          : notification
-      )
+  setNotifications((prev) => {
+    const updated = prev.map((notification) =>
+      notification.id === notificationId
+        ? { ...notification, status: "accepted" as const }
+        : notification
     );
 
-     const notification = notifications.find(n => n.id === notificationId);
-    if (notification) {
-      await declineInvite( user?.id, notification.id, );
-    }
-  };
+    // Update sessionStorage
+    sessionStorage.setItem("cached-notifications", JSON.stringify(updated));
+    return updated;
+  });
+
+  const notification = notifications.find((n) => n.id === notificationId);
+  if (notification) {
+    await acceptInvite(user?.id, notification);
+  }
+};
+
+const handleDecline = async (notificationId: string) => {
+  setNotifications((prev) => {
+    const updated = prev.map((notification) =>
+      notification.id === notificationId
+        ? { ...notification, status: "declined" as const }
+        : notification
+    );
+
+    // Update sessionStorage
+    sessionStorage.setItem("cached-notifications", JSON.stringify(updated));
+    return updated;
+  });
+
+  const notification = notifications.find((n) => n.id === notificationId);
+  if (notification) {
+    await declineInvite(user?.id, notification.id);
+  }
+};
+
 
   const getStatusBadge = (status: string) => {
     switch (status) {

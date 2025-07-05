@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from "@/lib/client";
 import { Attendee, EventNotification, EventType } from "@/types/types_all";
-import { UUIDTypes, v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 const supabase = createClient();
 
@@ -135,11 +135,11 @@ export async function getCurrentUserInvEvents(userId: string) {
   return events;
 }
 
-export async function getAttendeesId(eventId: number) {
+export async function getAttendeesId(eventSlug  : string) {
   const { data, error } = await supabase
     .from("events")
     .select("attendees")
-    .eq("id", eventId)
+    .eq("slug", eventSlug)
     .single();
 
   if (error) {
@@ -148,14 +148,15 @@ export async function getAttendeesId(eventId: number) {
   }
 
   const attendeesIds: number[] = data.attendees || [];
+  console.log("Attendees IDs:", attendeesIds);
   return attendeesIds;
 }
 
-export async function getUserFromAttndId(userId: number) {
+export async function getUserFromAttndId(attendeeId: number) {
   const { data, error } = await supabase
     .from("users")
     .select("*")
-    .eq("id", userId)
+    .eq("id", attendeeId)
     .single();
 
   if (error) {
