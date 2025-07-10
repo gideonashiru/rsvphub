@@ -46,7 +46,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   }
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn('flex flex-col gap-6 mt-50', className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
@@ -85,7 +85,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
                 {isLoading ? 'Logging in...' : 'Login'}
               </Button>
             </div>

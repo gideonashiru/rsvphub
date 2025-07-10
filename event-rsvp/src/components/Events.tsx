@@ -117,18 +117,21 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center">
-          {currentEvents.map((event: EventType, idx: number) => (
-            <motion.div
-              key={event.href}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: idx * 0.1 }}
-            >
-              <ThreeDCard event={event} />
-            </motion.div>
-          ))}
-        </div>
+
+ <div className="inline-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center px-4">
+  {currentEvents.map((event: EventType, idx:number) => (
+    <motion.div
+      key={event.href}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: idx * 0.1 }}
+      className="w-[26rem]"
+    >
+      <ThreeDCard event={event} />
+    </motion.div>
+  ))}
+</div>
+
       </div>
 
       {currentEvents.length === 0 && (
