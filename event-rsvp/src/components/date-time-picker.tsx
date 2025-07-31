@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { format } from "date-fns";
 
 interface DateTimePickerProps {
@@ -112,8 +112,7 @@ export function DateTimePicker({
             <Calendar
               mode="single"
               selected={currentTime || undefined}
-              onSelect={handleDateSelect}
-              // initialFocus
+              onSelect={handleDateSelect}             
               disabled={(date) => {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);

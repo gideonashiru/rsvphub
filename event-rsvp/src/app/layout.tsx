@@ -12,7 +12,7 @@ import { ThemeProvider } from "next-themes";
 import { Footer } from "@/components/ui/Footer";
 
 export const metadata: Metadata = {
-  title: "Event RSVP | by Gideon",
+  title: "RSVP Hub",
   description: "Create events, send out rsvp's.",
 };
 
@@ -39,9 +39,8 @@ export default function RootLayout({
             <NavbarDemo />
             {children}
           </div>
-
         
-          {/* <Footer /> */}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

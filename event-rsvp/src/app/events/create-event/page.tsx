@@ -1,10 +1,9 @@
 import { EventForm } from "@/components/EventForm";
 import { getCurrentUser } from "@/lib/actions/server-events";
 
-
 export default async function CreateEvent() {
   const user = await getCurrentUser();
-    if (!user) {
+  if (!user) {
     return (
       <main className="max-w-2xl mx-auto mt-40 mb-8 border rounded-2xl p-6 shadow-lg bg-card text-card-foreground">
         <article className="prose">
@@ -25,7 +24,7 @@ export default async function CreateEvent() {
           Create your event here and share it. You can also invite others to
           join your event.
         </h3>
-        <EventForm user = {user}/>
+        <EventForm user={user} />
       </article>
     </main>
   );

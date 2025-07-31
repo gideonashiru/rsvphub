@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import {
   motion,
@@ -247,7 +247,7 @@ export const NavbarLogo = () => {
         width={30}
         height={30}
       />
-      <span className="font-medium text-black dark:text-white">Event RSVP</span>
+      <span className="font-medium text-black dark:text-white">RSVP Hub</span>
     </a>
   );
 };

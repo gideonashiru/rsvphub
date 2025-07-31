@@ -51,6 +51,7 @@ export default function NotisPage({ user }: any) {
         }
       }
 
+
       setNotifications(combined);
       sessionStorage.setItem("cached-notifications", JSON.stringify(combined));
     } catch (error) {
@@ -174,7 +175,7 @@ const handleDecline = async (notificationId: string) => {
             <Bell className="w-8 h-8 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-4xl font-bold text-foreground">
+            <h1 className="text-4xl font-bold font-sans text-foreground">
               Event Notifications
             </h1>
             <p className="text-muted-foreground text-lg">

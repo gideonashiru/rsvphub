@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { EventType } from "@/types/types_all";
+
 
 
 export async function getCurrentUser() {

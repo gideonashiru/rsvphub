@@ -5,7 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 
 const supabase = createClient();
 
-export async function uploadImage(file: File): Promise<string | null> {
+export async function uploadImage(file: File, remove?: boolean): Promise<string | null> {
+
   if (!file) return null;
   const filePath = `${file.name}-${Date.now()}`;
   const { error } = await supabase.storage
@@ -135,7 +136,7 @@ export async function getCurrentUserInvEvents(userId: string) {
   return events;
 }
 
-export async function getAttendeesId(eventSlug  : string) {
+export async function getAttendeesId(eventSlug: string) {
   const { data, error } = await supabase
     .from("events")
     .select("attendees")
@@ -148,7 +149,6 @@ export async function getAttendeesId(eventSlug  : string) {
   }
 
   const attendeesIds: number[] = data.attendees || [];
-  console.log("Attendees IDs:", attendeesIds);
   return attendeesIds;
 }
 
@@ -211,15 +211,42 @@ export async function deleteEventBySlug(slug: string, ownerId: string) {
 
   // Optionally, delete the image from storage if it exists
   if (data.card) {
-    await supabase.storage.from("event-cards").remove([data.card]);
-    if (error) {
-      console.error("Error removing file:", error);
-    } else {
-      console.log("File removed successfully:", data);
-    }
+    removeFromBucket(data.card);
   }
+  
 
   return data;
+}
+
+export async function removeFromBucket(fileUrl: string | null){
+  console.log("Removing file from bucket:", fileUrl);
+  if (!fileUrl) return;
+
+  const path = fileUrl.split("/event-cards/")[1];
+  const { error } = await supabase.storage.from("event-cards").remove([path]);
+
+  if (error) {
+    console.error("Error removing file:", error);
+    return false;
+  } else {
+    console.log("File removed successfully:", fileUrl);
+    return true;
+  }
+}
+
+export async function updateEvent(
+  eventSlug: string,
+  values: any,
+  imageUrl: any
+) {
+  
+  const { data, error } = await supabase
+    .from("events")
+    .update({ title: values.title, description: values.description , location: values.location, date: values.date, capacity: values.capacity, card: imageUrl })
+    .eq("slug", eventSlug)
+    .select();
+
+  return { data, error };
 }
 
 export const saveInvite = async (slug: string, userId: string) => {
@@ -250,7 +277,7 @@ export const saveInvite = async (slug: string, userId: string) => {
 
     // You may add invite to db
     if (!existingInvite && !eventOwner) {
-      console.log(event.id, userNum);
+      
       // appending to array event invites
       const { data, error } = await supabase.rpc("append_invites", {
         event_id: event.id,
@@ -425,9 +452,7 @@ export async function acceptInvite(
     console.error("Error adding attendee:", eventError);
     return { success: false, message: "Failed to add attendee." };
   } else {
-
-        console.log("Event ID:", eventID);
-    console.log("Attendee ID:", attendee_id);
+ 
     // Optionally, delete the invite after accepting
     const { data, error } = await supabase.rpc("remove_invitee", {
       event_id: eventID.event_id,
@@ -439,13 +464,12 @@ export async function acceptInvite(
       return false;
     }
   }
-
 }
 
-export async function declineInvite(userId:string,inviteId: string) {
+export async function declineInvite(userId: string, inviteId: string) {
   // Get the user number from the userId
   const userNum = await getUserNumFromId(userId);
-  
+
   // Look up the invite to get the associated event_id
   const { data: invite, error: inviteErr } = await supabase
     .from("invites")
@@ -465,6 +489,35 @@ export async function declineInvite(userId:string,inviteId: string) {
 
   if (error) {
     console.error("Failed to remove invitee:", error.message);
+    return false;
+  }
+
+  return data;
+}
+export async function removeAttendee(
+  eventSlug: string,
+  attendeeId: number
+) {
+  // Get the event ID using the slug
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("id")
+    .eq("slug", eventSlug)
+    .single();
+
+  if (eventError || !event) {
+    console.error("Failed to fetch event:", eventError?.message);
+    return false;
+  }
+
+  // Remove the attendee from the event's attendees array
+  const { data, error } = await supabase.rpc("remove_attendee_from_event", {
+    event_row_id: event.id,
+    attendee_to_remove: attendeeId,
+  });
+
+  if (error) {
+    console.error("Failed to remove attendee:", error.message);
     return false;
   }
 

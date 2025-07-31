@@ -15,12 +15,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
+import { parse } from "date-fns";
 import { toast } from "sonner";
 import placeholder from "@/assets/images/placeholder.png";
-import { uploadImage, createEvent } from "@/lib/actions/client-events";
+import {
+  uploadImage,
+  updateEvent,
+  getEventBySlug,
+  removeFromBucket,
+} from "@/lib/actions/client-events";
 import { User } from "@supabase/supabase-js";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { EventType } from "@/types/types_all";
+import { slugToTitle } from "@/lib/utils/utils";
 import {
   formSchema,
   FormSchemaType,
@@ -45,15 +52,20 @@ const ImageUpload = dynamic(
   }
 );
 
+export function EditEventForm({ user }: { user: User }) {
+  const params = useParams();
+  const eventSlug: string = params.slug as string;
 
-
-export function EventForm(user: { user: User }) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [pickerMode, setPickerMode] = useState<"start" | "end">("start");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
+  const [currentEvent, setCurrentEvent] = useState<EventType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
   const router = useRouter();
+
+  const title = slugToTitle(eventSlug);
 
   // Define form with shared schema
   const form = useForm<FormSchemaType>({
@@ -62,50 +74,128 @@ export function EventForm(user: { user: User }) {
       title: "",
       description: "",
       location: "",
-      date: undefined,
+      date: "",
       capacity: 1,
       card: undefined,
     },
   });
 
+  // Fetch event data on component mount
   useEffect(() => {
-    if (user?.user?.id) {
-      form.setValue("userId", user.user.id);
+    const fetchEventData = async () => {
+      try {
+        setIsLoading(true);
+        const { event, isOwnerMatch } = await getEventBySlug(
+          eventSlug,
+          user?.id
+        );
+
+        if (!event) {
+          toast.error("Failed to load event data.");
+          router.push("/events");
+          return;
+        }
+
+        // Check if user owns this event
+        if (!isOwnerMatch) {
+          toast.error("You don't have permission to edit this event.");
+          router.push("/events");
+          return;
+        }
+
+        setCurrentEvent(event);
+        setExistingImageUrl(event.card || null);
+        setImagePreview(event.card || null);
+
+        // Parse the date string to extract start and end times
+        const dateRange = event.date.split(" - ");
+        if (dateRange.length === 2) {
+          const startDate = parse(
+            dateRange[0],
+            "MM/dd/yyyy hh:mm aa",
+            new Date()
+          );
+          const endDate = parse(
+            dateRange[1],
+            "MM/dd/yyyy hh:mm aa",
+            new Date()
+          );
+          setStartTime(startDate);
+          setEndTime(endDate);
+        }
+
+        // Set form values
+        form.setValue("title", event.title);
+        form.setValue("description", event.description ?? "");
+        form.setValue("location", event.location);
+        form.setValue("date", event.date);
+        form.setValue("capacity", event.capacity);
+
+      } catch (error) {
+        console.error("Error fetching event:", error);
+        toast.error("Failed to load event data.");
+        router.push("/events");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (eventSlug && user?.id) {
+      fetchEventData();
     }
-    
-    // Simulate loading time or wait for form to be ready
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000); // Adjust timing as needed
-    
-    return () => clearTimeout(timer);
-  }, [user?.user?.id, form]);
+  }, [eventSlug, user?.id, form, router]);
 
-  // Submit handler
+  // Submit handler for updating the event
   const onSubmit = async (values: FormSchemaType) => {
+    
+
     try {
-      const imageUrl = values.card ? await uploadImage(values.card) : null;
-      const { error } = await createEvent(values, imageUrl);
+      let imageUrl = existingImageUrl; // Keep existing image by default
 
-      if (error) throw new Error("Failed to create event.");
+      // Only upload new image if a new file was selected
+      if (values.card) {
+        // Delete previous image if it exists
+        await removeFromBucket(existingImageUrl);
+        imageUrl = await uploadImage(values.card);
+      }
 
-      toast.success("Event created successfully!");
-      router.push("/events");
+      const { error } = await updateEvent(eventSlug, values, imageUrl);
+
+      if (error) throw new Error("Failed to update event.");
+
+      toast.success("Event updated successfully!");
+      router.push(`/events/${eventSlug}`); // Redirect to event details page
     } catch (err) {
+      console.error("Error updating event:", err);
       toast.error("Something went wrong. Please try again.");
     }
   };
 
   // Wrapper functions using shared utilities
   const handleDateSelectWrapper = (date: Date | undefined) => {
-    handleDateSelect(date, pickerMode, startTime, endTime, setStartTime, setEndTime);
+    handleDateSelect(
+      date,
+      pickerMode,
+      startTime,
+      endTime,
+      setStartTime,
+      setEndTime
+    );
   };
 
   const handleTimeChangeWrapper = (
     type: "hour" | "minute" | "ampm",
     value: string
   ) => {
-    handleTimeChange(type, value, pickerMode, startTime, endTime, setStartTime, setEndTime);
+    handleTimeChange(
+      type,
+      value,
+      pickerMode,
+      startTime,
+      endTime,
+      setStartTime,
+      setEndTime
+    );
   };
 
   const isTimeButtonDisabledWrapper = (
@@ -113,11 +203,18 @@ export function EventForm(user: { user: User }) {
     minute?: number,
     ampm?: string
   ) => {
-    return isTimeButtonDisabled(pickerMode, startTime, endTime, hour, minute, ampm);
+    return isTimeButtonDisabled(
+      pickerMode,
+      startTime,
+      endTime,
+      hour,
+      minute,
+      ampm
+    );
   };
 
   const handleFileChangeWrapper = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFileChange(e, form, setImagePreview, imagePreview);
+    handleFileChange(e, form, setImagePreview, imagePreview, existingImageUrl);
   };
 
   // Update form date field when start/end times change
@@ -125,14 +222,13 @@ export function EventForm(user: { user: User }) {
     updateFormDateField(startTime, endTime, form);
   }, [startTime, endTime, form]);
 
-  // Clean up on unmount
+  // Clean up preview URLs on unmount
   useEffect(() => {
     return () => {
-      cleanupImagePreview(imagePreview);
+      cleanupImagePreview(imagePreview, existingImageUrl);
     };
-  }, [imagePreview]);
+  }, [imagePreview, existingImageUrl]);
 
-  // Show loading spinner while form is initializing
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -144,10 +240,36 @@ export function EventForm(user: { user: User }) {
     );
   }
 
+  if (!currentEvent) {
+    return (
+      <div className="text-center">
+        <p>Event not found.</p>
+        <Button onClick={() => router.push("/events")} className="mt-4">
+          Back to Events
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-2">Edit Your Event</h1>
+        <p className="text-muted-foreground mb-4">
+          Editing: <span className="font-semibold">{title}</span>
+        </p>
+        <p className="text-muted-foreground">
+          Update and or Change the details of your event below.
+        </p>
+      </div>
+
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit, (errors) => {
+            console.log("Validation failed", errors); 
+          })}
+          className="space-y-4"
+        >
           <FormField
             control={form.control}
             name="title"
@@ -165,7 +287,7 @@ export function EventForm(user: { user: User }) {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="description"
@@ -185,7 +307,7 @@ export function EventForm(user: { user: User }) {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="location"
@@ -244,30 +366,43 @@ export function EventForm(user: { user: User }) {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="card"
             render={() => (
               <FormItem>
                 <FormLabel>Event Card</FormLabel>
-                <ImageUpload
-                  handleFileChange={handleFileChangeWrapper}
-                  imagePreview={imagePreview}
-                  placeholder={placeholder.src}
-                />
+                <FormControl>
+                  <ImageUpload
+                    handleFileChange={handleFileChangeWrapper}
+                    imagePreview={imagePreview}
+                    placeholder={placeholder.src}
+                  />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button
-            type="submit"
-            className="w-full cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-2"
-          >
-            Build Your Event
-          </Button>
+          <div className="flex gap-4 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push(`/events/${eventSlug}`)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-2"
+            >
+              Update Event
+            </Button>
+          </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 }

@@ -11,7 +11,7 @@ import {
   DialogTrigger,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { redirect, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Attendee, EventType } from "@/types/types_all";
 import { useEffect, useState } from "react";
 import { getEventBySlug, deleteEventBySlug } from "@/lib/actions/client-events";
@@ -21,8 +21,10 @@ import {
   getAttendeesId,
   getUserFromAttndId,
 } from "@/lib/actions/client-events";
+import { useRouter } from "next/navigation";
 
 export default function EventSlugContent({ user }: { user: any }) {
+  const router = useRouter();
   const params = useParams();
   const [eventP, setEvent] = useState<EventType | null>(null);
   const [isOwner, setIsOwner] = useState(false);
@@ -56,7 +58,7 @@ export default function EventSlugContent({ user }: { user: any }) {
             attendeesData.filter((a): a is Attendee => !!a && !Array.isArray(a))
           );
         } else {
-          setAttendees([]); // Optional: clear list if no attendees found
+          setAttendees([]);
         }
       }
     };
@@ -85,18 +87,19 @@ export default function EventSlugContent({ user }: { user: any }) {
 
   async function deleteEvent() {
     if (!params.slug) return;
-    const confirmDelete = await deleteEventBySlug(
-      params.slug as string,
-      user.id
-    );
-    redirect("/events");
+    await deleteEventBySlug(params.slug as string, user.id);
+    router.push("/events");
+  }
+
+  function handleEditEvent(eventP: EventType) {
+    router.push(`/events/${eventP.slug}/edit`);
   }
 
   return (
     <div className="flex flex-row justify-center w-full">
       <div className="max-w-[1440px] relative">
         <div className="container mx-auto px-20 pt-[164px] mb-4 space-y-6">
-          {/* 👇 Entire owner-only panel is hidden if not the owner */}
+         
           {isOwner && (
             <motion.div
               key={eventP.href}
@@ -106,16 +109,17 @@ export default function EventSlugContent({ user }: { user: any }) {
               className="bg-card/90 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-sm"
             >
               <div className="flex flex-col space-y-6 sm:flex-row sm:space-y-0 sm:space-x-2">
-                <Link href={`/events/${eventP.slug}/edit`}>
-                  <Button
-                    size="sm"
-                    variant="link"
-                    className="flex items-center cursor-pointer"
-                  >
-                    <SquarePen />
-                    Edit Event
-                  </Button>
-                </Link>
+                {/* <Link > */}
+                <Button
+                  onClick={() => handleEditEvent(eventP)}
+                  size="sm"
+                  variant="link"
+                  className="flex items-center cursor-pointer"
+                >
+                  <SquarePen />
+                  Edit Event
+                </Button>
+                {/* </Link> */}
 
                 <Dialog>
                   <DialogTrigger asChild>

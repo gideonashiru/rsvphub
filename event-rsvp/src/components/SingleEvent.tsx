@@ -25,23 +25,16 @@ export const SingleEventPage = ({
   const router = useRouter();
  
 
-  const inviteLink = `${window.location.origin}/invite/${event.slug}`;
-
-  function rsvpHere() {
-    router.push(`/events/${event.slug}/rsvp`);
-  }
+  const inviteLink = `${window.location.origin}/invites/${event.slug}`;
 
   const copyInviteLink = async () => {
     try {
       await navigator.clipboard.writeText(inviteLink);
       toast.success("RSVP link copied to clipboard!");
     } catch (err) {
-      console.error("Failed to copy: ", err);
       toast.error("Failed to copy RSVP link.");
     }
   };
-
-
 
   return (
     <div className="flex flex-col gap-8">
@@ -128,7 +121,6 @@ export const SingleEventPage = ({
                   size="lg"
                   variant="default"
                   className="cursor-pointer w-full py-4 px-6 rounded-xl bg-primary hover:bg-primary/90 hover:ring-2 hover:ring-ring hover:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5"
-                  // onClick={rsvpHere}
                   onClick={copyInviteLink}
                 >
                   <Link className="w-5 h-5" />
@@ -140,7 +132,7 @@ export const SingleEventPage = ({
         </div>
 
         {/* Attendees section */}
-        {isOwner && <Attendees attendees={attendees} isOwner={isOwner} />}
+        {isOwner && <Attendees attendees={attendees} isOwner={isOwner} eventSlug={event.slug}/>}
       </motion.div>
     </div>
   );

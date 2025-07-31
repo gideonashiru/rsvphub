@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/pagination";
 import { ThreeDCard } from "./event-3d-card";
 import { Button } from "./ui/button";
-import Link from "next/link";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type TabKey = "my-events" | "invited-events" | "past-events";
 
@@ -32,12 +32,13 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
   const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
   const totalPages = Math.ceil(events.length / eventsPerPage);
- 
+
+  const router = useRouter();
 
   const tabLabels = {
     "my-events": "My Events",
     "invited-events": "Invited Events",
-    "past-events": "Past Events",
+    // "past-events": "Past Events",
   };
 
   const TabButton = ({
@@ -97,14 +98,12 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
           </nav>
 
           {/* Create Event Button */}
-          <Button className="flex items-center gap-2 hover:bg-accent cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-2">
-            <Link
-              href="/events/create-event"
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Create Event
-            </Link>
+          <Button
+            className="flex items-center gap-2 hover:bg-accent cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-2"
+            onClick={() => router.push("/events/create-event")}
+          >
+            <Plus className="w-4 h-4" />
+            Create Event
           </Button>
         </div>
       </div>
@@ -117,21 +116,19 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
           </div>
         </div>
 
-
- <div className="inline-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center px-4">
-  {currentEvents.map((event: EventType, idx:number) => (
-    <motion.div
-      key={event.href}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: idx * 0.1 }}
-      className="w-[26rem]"
-    >
-      <ThreeDCard event={event} />
-    </motion.div>
-  ))}
-</div>
-
+        <div className="inline-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center px-4">
+          {currentEvents.map((event: EventType, idx: number) => (
+            <motion.div
+              key={event.href}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: idx * 0.1 }}
+              className="w-[26rem]"
+            >
+              <ThreeDCard event={event} />
+            </motion.div>
+          ))}
+        </div>
       </div>
 
       {currentEvents.length === 0 && (
@@ -167,6 +164,7 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
                   className={
                     currentPage === 1 ? "pointer-events-none opacity-50" : ""
                   }
+                  size={undefined}
                 />
               </PaginationItem>
               {Array.from({ length: totalPages }, (_, i) => (
@@ -178,6 +176,7 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
                       e.preventDefault();
                       setCurrentPage(i + 1);
                     }}
+                    size={undefined}
                   >
                     {i + 1}
                   </PaginationLink>
@@ -195,6 +194,7 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
                       ? "pointer-events-none opacity-50"
                       : ""
                   }
+                  size={undefined}
                 />
               </PaginationItem>
             </PaginationContent>

@@ -18,7 +18,6 @@ export const Footer = () => {
           <Link href="/about" className="hover:underline">About</Link>
           <Link href="/events" className="hover:underline">Events</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
-          <Link href="/privacy" className="hover:underline">Privacy</Link>
         </nav>
 
         {/* Copyright */}
