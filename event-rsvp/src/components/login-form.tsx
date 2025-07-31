@@ -50,7 +50,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
+          <CardDescription>Enter your login credentials below to access RSVP Hub</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>

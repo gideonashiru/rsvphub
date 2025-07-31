@@ -41,7 +41,7 @@ const ContactPage = () => {
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
-              yourportfolio.com
+              dont have one yet
             </a>
           </div>
         </div>

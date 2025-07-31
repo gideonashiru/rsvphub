@@ -24,13 +24,17 @@ export function NavbarDemo() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-
-            <NavbarButton href="/auth/login" className="bg-primary text-primary-foreground focus-visible:ring-ring hover:bg-accent">
-              Login
-            </NavbarButton>
-
-            <NavbarButton href="/auth/sign-up" className="bg-primary text-primary-foreground border-input focus-visible:ring-ring hover:bg-accent">
+            <NavbarButton
+              href="/auth/sign-up"
+              className="bg-primary text-primary-foreground border-input focus-visible:ring-ring hover:bg-accent"
+            >
               Sign up
+            </NavbarButton>
+            <NavbarButton
+              href="/protected"
+              className="bg-primary text-primary-foreground focus-visible:ring-ring hover:bg-accent"
+            >
+              Log out
             </NavbarButton>
           </div>
         </NavBody>
@@ -60,14 +64,7 @@ export function NavbarDemo() {
               </a>
             ))}
             <div className="flex w-full flex-col gap-4">
-              <NavbarButton
-                href="/auth/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton>
+ 
               <NavbarButton
                 href="/auth/sign-up"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -76,12 +73,19 @@ export function NavbarDemo() {
               >
                 Sign up
               </NavbarButton>
+
+              <NavbarButton
+                href="/protected"
+                onClick={() => setIsMobileMenuOpen(false)}
+                variant="secondary"
+                className="w-full"
+              >
+                Log out
+              </NavbarButton>
             </div>
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
-
     </div>
   );
 }
-

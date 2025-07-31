@@ -16,11 +16,11 @@ export default function LandingPage() {
 
         <div className="mb-8 space-x-4 flex items-center justify-center rounded-lg">
           <Link
-            href="/auth/sign-up"
+            href="/auth/login"
             className="px-6 py-3 bg-primary ring-primary focus-visible:ring-ring rounded hover:bg-primary/70 
         transition-colors text-primary-foreground"
           >
-            Sign Up
+            Log in
           </Link>
 
           <Link
