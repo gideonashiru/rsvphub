@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { cn } from "@/lib/utils/utils";
 import { IconMenu2, IconX } from "@tabler/icons-react";
@@ -12,7 +10,8 @@ import {
 
 import React, { useRef, useState } from "react";
 import appLogo from '@/assets/images/favicon_io/android-chrome-512x512.png';
-//src\assets\images\favicon_io\android-chrome-512x512.png
+import Image from "next/image";
+
 
 
 interface NavbarProps {
@@ -241,7 +240,7 @@ export const NavbarLogo = () => {
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
 
-      <img
+      <Image
         src = {appLogo.src}
         alt="logo"
         width={30}
