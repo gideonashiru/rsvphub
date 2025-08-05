@@ -1,3 +1,5 @@
+
+
 const AboutPage = () => {
   return (
     <>
@@ -23,6 +25,7 @@ const AboutPage = () => {
 
         </p>
       </div>
+      
     </>
   );
 };

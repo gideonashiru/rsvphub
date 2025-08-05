@@ -1,5 +1,6 @@
 "use client";
 
+
 import React from "react";
 
 const ContactPage = () => {
@@ -50,6 +51,7 @@ const ContactPage = () => {
           We typically respond within 1–2 business days.
         </div>
       </div>
+      
     </section>
   );
 };

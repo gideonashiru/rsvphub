@@ -33,13 +33,9 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Toaster richColors />
+          <NavbarDemo />
 
-          {/* Wrapper for content and navbar */}
-          <div className="flex-grow flex flex-col lg:pl-2 lg:pt-2 lg:pr-2 overflow-y-auto">
-            <NavbarDemo />
-            {children}
-          </div>
-        
+          <main className="flex-grow"> {children} </main>
           <Footer />
         </ThemeProvider>
       </body>

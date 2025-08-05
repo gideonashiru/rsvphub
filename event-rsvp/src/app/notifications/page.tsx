@@ -1,10 +1,9 @@
 import NotisPage from "@/components/clientPages/Notis-cpg";
-import { Footer } from "@/components/ui/Footer";
+
 import { getCurrentUser } from "@/lib/actions/server-events";
 
 export default async function Page() {
   const user = await getCurrentUser();
-
 
   if (!user) {
     // You can render a fallback UI or redirect as needed
@@ -13,11 +12,8 @@ export default async function Page() {
   return (
     <>
       <main>
-        {" "}
-        <NotisPage user={user} />{" "}
+        <NotisPage user={user} />
       </main>
-
-      <Footer />
     </>
   );
 }

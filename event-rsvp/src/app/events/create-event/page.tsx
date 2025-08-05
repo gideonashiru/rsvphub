@@ -1,6 +1,7 @@
 import { EventForm } from "@/components/EventForm";
 import { getCurrentUser } from "@/lib/actions/server-events";
 
+
 export default async function CreateEvent() {
   const user = await getCurrentUser();
   if (!user) {
@@ -12,6 +13,7 @@ export default async function CreateEvent() {
             You must be logged in to create an event.
           </p>
         </article>
+        
       </main>
     );
   }
@@ -26,6 +28,7 @@ export default async function CreateEvent() {
         </h3>
         <EventForm user={user} />
       </article>
+      
     </main>
   );
 }

@@ -35,6 +35,12 @@ export function InviteClient({ user }: { user: any }) {
             description: "Ask the event planner for the correct link",
           });
         }
+
+        // Redirect to notifications after 1.5 seconds
+        setTimeout(() => {
+          window.location.href = `/notifications`;
+        }, 1500
+        );
       };
 
       save();
@@ -47,7 +53,7 @@ export function InviteClient({ user }: { user: any }) {
       <h1 className="text-3xl font-bold">RSVP Page</h1>
       <p className="text-muted-foreground">{msg}</p>
       <Button
-        className="bg-black hover:bg-blue-600 text-white cursor-pointer"
+        className="bg-black hover:bg-foreground text-white cursor-pointer"
         onClick={() => (window.location.href = `/notifications`)}
         disabled={msg === "Checking your invite link..."}
       >
