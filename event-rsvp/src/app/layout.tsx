@@ -1,5 +1,6 @@
 import "antd/dist/reset.css";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 import type { Metadata } from "next";
 import { twMerge } from "tailwind-merge";
@@ -35,7 +36,8 @@ export default function RootLayout({
           <Toaster richColors />
           <NavbarDemo />
 
-          <main className="flex-grow"> {children} </main>
+          <main className="flex-grow"> {children}</main>
+          <Analytics />
           <Footer />
         </ThemeProvider>
       </body>
