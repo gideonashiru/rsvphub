@@ -1,7 +1,6 @@
 import "antd/dist/reset.css";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
-
 import type { Metadata } from "next";
 import { twMerge } from "tailwind-merge";
 import { NavbarDemo } from "@/components/navbar";
@@ -11,6 +10,7 @@ import { inter } from "./fonts";
 import { montserrat } from "./fonts";
 import { ThemeProvider } from "next-themes";
 import { Footer } from "@/components/ui/Footer";
+import { SessionLogoutWrapper } from "@/components/SessionLogoutWrapper";
 
 export const metadata: Metadata = {
   title: "RSVP Hub",
@@ -33,10 +33,11 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <SessionLogoutWrapper />
           <Toaster richColors />
           <NavbarDemo />
 
-          <main className="flex-grow"> {children}</main>
+          <main className="flex-grow">{children}</main>
           <Analytics />
           <Footer />
         </ThemeProvider>
