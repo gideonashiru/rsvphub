@@ -79,7 +79,7 @@ export function LoginForm({
     try {
       const demoUsername = process.env.NEXT_PUBLIC_DEMO_USERNAME || "demo";
       
-      // First, ensure demo user exists
+      // 1. Ensure demo user exists
       const setupResponse = await fetch("/api/auth/setup-demo", {
         method: "POST",
         headers: {
@@ -88,10 +88,12 @@ export function LoginForm({
       });
 
       if (!setupResponse.ok) {
-        console.warn('Demo setup failed, attempting login anyway');
+        // If setup fails, we cannot guarantee the user exists, so we stop here.
+        const setupData = await setupResponse.json();
+        throw new Error(setupData.error || "Failed to set up demo user. Please contact support.");
       }
 
-      // Now login with demo credentials
+      // 2. Now login with demo credentials
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -155,7 +157,7 @@ export function LoginForm({
               <h3 className="text-sm sm:text-base font-semibold text-foreground">
                 For Recruiters & Employers
               </h3>
-            </div>
+            </div >
 
             <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 leading-relaxed">
               Try the demo account instantly with no signup required!
@@ -167,13 +169,13 @@ export function LoginForm({
             >
               Try Demo Account
             </Button>
-          </div>
+          </div >
 
           {/* Divider */}
           <div className="relative my-4 sm:my-6">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
-            </div>
+            </div >
             <div className="relative flex justify-center text-xs sm:text-sm uppercase">
               <span className="bg-background px-2 text-muted-foreground">
                 Or login with username
@@ -199,7 +201,7 @@ export function LoginForm({
                   disabled={isLoading}
                   autoFocus
                 />
-              </div>
+              </div >
 
               {error && (
                 <p className="text-xs sm:text-sm text-destructive break-words">
@@ -214,7 +216,7 @@ export function LoginForm({
               >
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
-            </div>
+            </div >
 
             <div className="mt-4 sm:mt-6 text-center">
               <span className="text-xs sm:text-sm text-muted-foreground">
@@ -230,6 +232,6 @@ export function LoginForm({
           </form>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }
