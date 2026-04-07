@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils/utils";
-import { createClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,14 +14,12 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,117 +27,80 @@ export function SignUpForm({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
-    if (password !== repeatPassword) {
-      setError("Passwords do not match");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const { data: authData, error: authError} = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+      const response = await fetch("/api/auth/sign-up", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ username }),
       });
-      if (authError) throw authError;
 
-       // If user was created successfully, add them to your users table
-      if (authData.user) {
-        const { error: dbError } = await supabase
-          .from('users')
-          .insert({
-            owner_uuid: authData.user.id,
-            email: authData.user.email,
-            username: username, 
-            owned_event_id: [],
-            invited_event_id: [],
-            pfp_url: null
-          })
-
-        if (dbError) {
-          // console.error('Error creating user profile:', dbError)
-          router.push("/auth/already-registered");
-          return; // Stop further execution if user profile creation fails
-        }
+      let data;
+      const responseText = await response.text();
+      console.log('Sign-up response status:', response.status);
+      console.log('Raw response:', responseText);
+      
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (jsonError) {
+        console.error('Failed to parse response as JSON:', jsonError);
+        console.error('Response was:', responseText);
+        const errorMsg = `Invalid server response (status ${response.status}): ${responseText.substring(0, 100)}`;
+        setError(errorMsg);
+        toast.error(errorMsg);
+        setIsLoading(false);
+        return;
       }
 
-      router.push("/auth/sign-up-success");
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create account");
+      }
+
+      toast.success("Account created successfully!");
+      router.push("/");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      const message = error instanceof Error ? error.message : "An error occurred";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
-
-
   };
+
   return (
     <div className={cn("mt-40 flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+          <CardDescription>Create a new account with just a username</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="email@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="repeat-password">Repeat Password</Label>
-                </div>
-                <Input
-                  id="repeat-password"
-                  type="password"
-                  required
-                  value={repeatPassword}
-                  onChange={(e) => setRepeatPassword(e.target.value)}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                <Label htmlFor="repeat-password">Username</Label>
-                </div>
+                <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
-                  type="username"
+                  type="text"
+                  placeholder="Choose a unique username"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLoading}
+                  autoFocus
                 />
+                <p className="text-xs text-muted-foreground">
+                  3-20 characters, letters, numbers, hyphens, and underscores only
+                </p>
               </div>
 
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? "Creating account..." : "Create Account"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

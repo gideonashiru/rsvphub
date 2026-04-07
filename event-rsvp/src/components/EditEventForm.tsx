@@ -24,7 +24,6 @@ import {
   getEventBySlug,
   removeFromBucket,
 } from "@/lib/actions/client-events";
-import { User } from "@supabase/supabase-js";
 import { useRouter, useParams } from "next/navigation";
 import { EventType } from "@/types/types_all";
 import { slugToTitle } from "@/lib/utils/utils";
@@ -52,7 +51,13 @@ const ImageUpload = dynamic(
   }
 );
 
-export function EditEventForm({ user }: { user: User }) {
+interface DummyAuthUser {
+  id: string;
+  username: string;
+  email?: string;
+}
+
+export function EditEventForm({ user }: { user: DummyAuthUser }) {
   const params = useParams();
   const eventSlug: string = params.slug as string;
 

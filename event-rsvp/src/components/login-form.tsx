@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils/utils";
-import { createClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,28 +20,52 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
       });
-      if (error) throw error;
-      router.push("/");
+
+      let data;
+      const responseText = await response.text();
+      console.log('Login response status:', response.status);
+      console.log('Raw response:', responseText);
+      
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        console.error('Response was:', responseText);
+        const errorMsg = `Invalid server response (status ${response.status}): ${responseText.substring(0, 100)}`;
+        setError(errorMsg);
+        toast.error(errorMsg);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+
       toast.success("Login successful!");
+      router.push("/");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      const message = error instanceof Error ? error.message : "An error occurred";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -50,23 +73,60 @@ export function LoginForm({
 
   const demoAccess = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: process.env.NEXT_PUBLIC_DEMO_EMAIL ?? "",
-        password: process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? "",
+      const demoUsername = process.env.NEXT_PUBLIC_DEMO_USERNAME || "demo";
+      
+      // First, ensure demo user exists
+      const setupResponse = await fetch("/api/auth/setup-demo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      if (error) {
-        alert('Demo login failed. Please try again.');
-        throw error;}
 
+      if (!setupResponse.ok) {
+        console.warn('Demo setup failed, attempting login anyway');
+      }
+
+      // Now login with demo credentials
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: demoUsername }),
+      });
+
+      let data;
+      const responseText = await response.text();
+      console.log('Demo login response status:', response.status);
+      console.log('Raw response:', responseText);
+      
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        console.error('Response was:', responseText);
+        const errorMsg = `Invalid server response (status ${response.status}): ${responseText.substring(0, 100)}`;
+        setError(errorMsg);
+        toast.error(errorMsg);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Demo login failed");
+      }
+
+      toast.success("Demo login successful!");
       router.push("/");
-      toast.success("Login successful!");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      const message = error instanceof Error ? error.message : "An error occurred";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +144,7 @@ export function LoginForm({
         <CardHeader className="space-y-1 px-4 sm:px-6 pt-4 sm:pt-6">
           <CardTitle className="text-xl sm:text-2xl">Login</CardTitle>
           <CardDescription className="text-sm sm:text-base">
-            Enter your login credentials below to access RSVP Hub
+            Enter your username to access RSVP Hub
           </CardDescription>
         </CardHeader>
 
@@ -98,15 +158,14 @@ export function LoginForm({
             </div>
 
             <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 leading-relaxed">
-              Skip the signup process - explore the full app instantly with a
-              demo account!
+              Try the demo account instantly with no signup required!
             </p>
 
             <Button
               onClick={demoAccess}
               className="w-full text-xs sm:text-sm py-2 sm:py-2.5 cursor-pointer"
             >
-              🚀 Try Demo Account (No Signup Required)
+              Try Demo Account
             </Button>
           </div>
 
@@ -117,7 +176,7 @@ export function LoginForm({
             </div>
             <div className="relative flex justify-center text-xs sm:text-sm uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Or continue with email
+                Or login with username
               </span>
             </div>
           </div>
@@ -126,39 +185,19 @@ export function LoginForm({
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-4 sm:gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-sm sm:text-base">
-                  Email
+                <Label htmlFor="username" className="text-sm sm:text-base">
+                  Username
                 </Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="h-9 sm:h-10 text-sm sm:text-base"
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm sm:text-base">
-                    Password
-                  </Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="text-xs sm:text-sm underline-offset-4 hover:underline text-muted-foreground"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-9 sm:h-10 text-sm sm:text-base"
+                  disabled={isLoading}
+                  autoFocus
                 />
               </div>
 

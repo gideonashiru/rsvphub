@@ -19,7 +19,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import placeholder from "@/assets/images/placeholder.png";
 import { uploadImage, createEvent } from "@/lib/actions/client-events";
-import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import {
   formSchema,
@@ -45,9 +44,13 @@ const ImageUpload = dynamic(
   }
 );
 
+interface DummyAuthUser {
+  id: string;
+  username: string;
+  email?: string;
+}
 
-
-export function EventForm(user: { user: User }) {
+export function EventForm({ user }: { user: DummyAuthUser }) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [pickerMode, setPickerMode] = useState<"start" | "end">("start");
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -69,8 +72,8 @@ export function EventForm(user: { user: User }) {
   });
 
   useEffect(() => {
-    if (user?.user?.id) {
-      form.setValue("userId", user.user.id);
+    if (user?.id) {
+      form.setValue("userId", user.id);
     }
     
     // Simulate loading time or wait for form to be ready
@@ -79,7 +82,7 @@ export function EventForm(user: { user: User }) {
     }, 1000); // Adjust timing as needed
     
     return () => clearTimeout(timer);
-  }, [user?.user?.id, form]);
+  }, [user?.id, form]);
 
   // Submit handler
   const onSubmit = async (values: FormSchemaType) => {
