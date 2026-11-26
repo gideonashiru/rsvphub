@@ -4,17 +4,9 @@
 import React, { useEffect, useState } from "react";
 import { EventType } from "@/types/types_all";
 import { motion } from "framer-motion";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationLink,
-  PaginationNext,
-} from "@/components/ui/pagination";
 import { ThreeDCard } from "./event-3d-card";
 import { Button } from "./ui/button";
-import { Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type TabKey = "my-events" | "invited-events" | "past-events";
@@ -152,53 +144,54 @@ export const Events = ({ title, events, onTabChange }: EventsProps) => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-12">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage((p) => Math.max(p - 1, 1));
-                  }}
-                  className={
-                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
+          <nav aria-label="Event pages" className="mx-auto flex justify-center">
+            <ul className="flex items-center gap-1">
+              <li>
+                <button
+                  type="button"
+                  aria-label="Go to previous page"
+                  disabled={currentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((page) => Math.max(page - 1, 1))
                   }
-                  size={undefined}
-                />
-              </PaginationItem>
+                  className="inline-flex h-9 items-center justify-center gap-1 rounded-md px-2.5 text-sm font-medium transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                >
+                  <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+                  <span className="hidden sm:block">Previous</span>
+                </button>
+              </li>
               {Array.from({ length: totalPages }, (_, i) => (
-                <PaginationItem key={i}>
-                  <PaginationLink
-                    href="#"
-                    isActive={currentPage === i + 1}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(i + 1);
-                    }}
-                    size={undefined}
+                <li key={i}>
+                  <button
+                    type="button"
+                    aria-current={currentPage === i + 1 ? "page" : undefined}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${
+                      currentPage === i + 1
+                        ? "bg-accent text-accent-foreground"
+                        : "hover:bg-accent"
+                    }`}
                   >
                     {i + 1}
-                  </PaginationLink>
-                </PaginationItem>
+                  </button>
+                </li>
               ))}
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage((p) => Math.min(p + 1, totalPages));
-                  }}
-                  className={
-                    currentPage === totalPages
-                      ? "pointer-events-none opacity-50"
-                      : ""
+              <li>
+                <button
+                  type="button"
+                  aria-label="Go to next page"
+                  disabled={currentPage === totalPages}
+                  onClick={() =>
+                    setCurrentPage((page) => Math.min(page + 1, totalPages))
                   }
-                  size={undefined}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                  className="inline-flex h-9 items-center justify-center gap-1 rounded-md px-2.5 text-sm font-medium transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                >
+                  <span className="hidden sm:block">Next</span>
+                  <ChevronRight aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </li>
+            </ul>
+          </nav>
         </div>
       )}
     </div>
