@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RSVP Hub 🚀
 
-## Getting Started
+[![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 
-First, run the development server:
+**RSVP Hub** is a web application that lets users **create, manage, and share events** easily. Built with React, Next.js, and Supabase, it handles authentication, stores event data, and tracks RSVPs efficiently.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌟 Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **User Authentication** – Secure sign-up and login using Supabase Auth  
+- **Event Management** – Create and manage events easily  
+- **RSVP Tracking** – Monitor responses from attendees in real-time  
+- **Database Storage** – Event and user data securely stored in Supabase  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🎯 Planned Integrations / Future Improvements
 
-To learn more about Next.js, take a look at the following resources:
+| API | Purpose |
+|-----|---------|
+| **OpenAI API (ChatGPT)** | Chatbot to answer FAQs about events |
+| **Google Calendar API** | Add events directly to users’ Google Calendar |
+|                       | Send SMS notifications to attendees |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 💻 Tech Stack
 
-## Deploy on Vercel
+- **Frontend:** React, Next.js, Tailwind CSS, ShadCN
+- **Backend / Database:** Supabase (PostgreSQL)  
+- **Deployment:** Vercel  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔗 Live Demo
+
+Check out the live app here: [RSVP Hub](https://rsvphub.vercel.app)
+
+---
